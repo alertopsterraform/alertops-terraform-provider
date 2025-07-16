@@ -4,13 +4,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Release](https://img.shields.io/github/release/alertops/terraform-provider-alertops.svg)](https://github.com/alertops/terraform-provider-alertops/releases)
 
-The official Terraform provider for [AlertOps](https://alertops.com), allowing you to manage your AlertOps infrastructure as code.
+The official Terraform provider for [AlertOps](https://alertops.com), allowing you to manage your AlertOps infrastructure as code. This is an initial release version published by AlertOps. Enhancements will be made and published as a generally available provider via Terraform.
 
 ## Features
 
 - **Complete AlertOps Management**: Manage users, groups, schedules, workflows, escalation policies, and integrations
 - **Infrastructure as Code**: Version control and automate your AlertOps configuration
-- **Production Ready**: Used by AlertOps customers in production environments
 - **Comprehensive Testing**: Extensive test suite with real-world scenarios
 
 ## Supported Resources
