@@ -1,0 +1,38 @@
+terraform {
+  required_providers {
+    alertops = {
+      source  = "alertopsterraform/alertops"
+    }
+  }
+}
+
+provider "alertops" {
+  api_key = var.alertops_api_key
+}
+
+variable "alertops_api_key" {
+  description = "AlertOps API key"
+  type        = string
+  sensitive   = true
+}
+
+# Simple group creation test
+resource "alertops_group" "simple_test" {
+  group_name  = "terraform-test-group"
+  description = "Test group created by Terraform"
+  type        = "Standard"
+  
+  # Add members - these should be existing user IDs
+  # For now, we'll leave it empty to test basic group creation
+  # members = [71715]  # Replace with actual user ID
+}
+
+# Output for verification
+output "simple_test_group_id" {
+  value = alertops_group.simple_test.group_id
+}
+
+output "group_debug_json" {
+  value = alertops_group.simple_test.debug_request_json
+  description = "JSON that was sent to AlertOps API for debugging"
+} 

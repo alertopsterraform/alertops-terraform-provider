@@ -1,0 +1,143 @@
+project_name: terraform-provider-alertops
+
+before:
+  hooks:
+    - go mod tidy
+    - go mod download
+
+builds:
+  - id: terraform-provider-alertops
+    main: .
+    binary: terraform-provider-alertops_v{{ .Version }}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+      - freebsd
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - 6
+      - 7
+    ignore:
+      # Apple M1 (darwin/arm64) support was added in Go 1.16
+      - goos: darwin
+        goarch: arm
+      - goos: windows
+        goarch: arm64
+      - goos: windows
+        goarch: arm
+      - goos: freebsd
+        goarch: arm64
+      - goos: freebsd
+        goarch: arm
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+
+archives:
+  - id: terraform-provider-alertops
+    builds:
+      - terraform-provider-alertops
+    format: zip
+    name_template: >-
+      terraform-provider-alertops_{{ .Version }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    files:
+      - README.md
+      - LICENSE
+      - CHANGELOG.md
+
+checksum:
+  name_template: 'terraform-provider-alertops_{{ .Version }}_SHA256SUMS'
+  algorithm: sha256
+
+signs:
+  - artifacts: checksum
+    args:
+      - "--batch"
+      - "--local-user"
+      - "{{ .Env.GPG_FINGERPRINT }}"
+      - "--output"
+      - "${signature}"
+      - "--detach-sign"
+      - "${artifact}"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^chore:'
+      - '^ci:'
+      - merge conflict
+      - Merge pull request
+      - Merge branch
+  groups:
+    - title: 'New Features'
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: 'Bug Fixes'
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 1
+    - title: 'Documentation'
+      regexp: "^.*docs[(\\w)]*:+.*$"
+      order: 2
+    - title: 'Other Changes'
+      order: 999
+
+release:
+  github:
+    owner: alertops
+    name: terraform-provider-alertops
+  draft: false
+  prerelease: auto
+  name_template: "v{{ .Version }}"
+  header: |
+    ## AlertOps Terraform Provider v{{ .Version }}
+    
+    This release includes the following changes:
+  footer: |
+    
+    ---
+    
+    ## Installation
+    
+    ### Terraform Registry (Recommended)
+    ```hcl
+    terraform {
+      required_providers {
+        alertops = {
+          source  = "alertops/alertops"
+          version = "~> {{ .Major }}.{{ .Minor }}"
+        }
+      }
+    }
+    ```
+    
+    ### Manual Installation
+    1. Download the appropriate binary for your platform from the Assets section below
+    2. Extract and place in your Terraform plugins directory
+    3. See [Installation Guide](https://github.com/alertops/terraform-provider-alertops#installation) for details
+    
+    ## Documentation
+    - [Provider Documentation](https://registry.terraform.io/providers/alertops/alertops/latest/docs)
+    - [Examples](https://github.com/alertops/terraform-provider-alertops/tree/main/examples)
+    - [Changelog](https://github.com/alertops/terraform-provider-alertops/blob/main/CHANGELOG.md)
+
+# Configure manifest for Terraform Registry
+terraform_provider_manifest:
+  version: 2 

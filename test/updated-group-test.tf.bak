@@ -1,0 +1,116 @@
+terraform {
+  required_providers {
+    alertops = {
+      source  = "alertopsterraform/alertops"
+    }
+  }
+}
+
+provider "alertops" {
+  api_key = var.alertops_api_key
+}
+
+variable "alertops_api_key" {
+  description = "AlertOps API key"
+  type        = string
+  sensitive   = true
+}
+
+# =============================================================================
+# PHASE 1: USER CREATION (Test this first)
+# =============================================================================
+
+resource "alertops_user" "test_user_for_group" {
+  user_name  = "terraform-group-test-user"
+  first_name = "Group"
+  last_name  = "TestChangeUser"
+  locale     = "en-US"
+  time_zone  = "(UTC-06:00) Central Time (US & Canada)"
+  type       = "Standard"
+  
+  contact_methods {
+    contact_method_name = "Email-Official"
+    email {
+      email_address = "group-test-user@example.com"
+    }
+    enabled = true
+    sequence = 1
+  }
+  
+  contact_methods {
+    contact_method_name = "Phone-Official"
+    phone {
+      country_code = "1"
+      phone_number = "5551234567"
+    }
+    enabled = true
+    sequence = 2
+  }
+  
+  roles = ["Basic"]
+}
+
+# =============================================================================
+# PHASE 2: GROUP CREATION (Test this after user is working)
+# =============================================================================
+
+resource "alertops_group" "iterative_test_group" {
+  group_name = "terraform-iterative-test-group"
+  dynamic    = false
+  
+  description = [
+    "Iterative test group created by Terraform",
+    "Testing Users + Groups integration",
+    "Phase 2 of testing This is a crud though change"
+  ]
+  
+  # Add the user we created above as a member
+  members {
+    member_type = "User"
+    member      = alertops_user.test_user_for_group.user_name
+    sequence    = 1
+    roles       = ["Primary", "Manager"]
+  }
+  
+  # Test without contact methods, topics, and attributes for now
+  # (These will be implemented as separate resources in later phases)
+}
+
+# =============================================================================
+# OUTPUTS FOR VERIFICATION
+# =============================================================================
+
+output "phase1_user_info" {
+  value = {
+    user_id   = alertops_user.test_user_for_group.user_id
+    user_name = alertops_user.test_user_for_group.user_name
+    full_name = "${alertops_user.test_user_for_group.first_name} ${alertops_user.test_user_for_group.last_name}"
+  }
+  description = "User created in Phase 1"
+}
+
+output "phase2_group_info" {
+  value = {
+    group_id   = alertops_group.iterative_test_group.group_id
+    group_name = alertops_group.iterative_test_group.group_name
+    dynamic    = alertops_group.iterative_test_group.dynamic
+  }
+  description = "Group created in Phase 2"
+}
+
+output "integration_test" {
+  value = {
+    user_created_first = alertops_user.test_user_for_group.user_name
+    group_references_user = alertops_group.iterative_test_group.members[0].member
+    dependency_works = alertops_user.test_user_for_group.user_name == alertops_group.iterative_test_group.members[0].member
+  }
+  description = "Verification that group properly references user"
+}
+
+output "debug_info" {
+  value = {
+    group_request_json = alertops_group.iterative_test_group.debug_request_json
+  }
+  description = "Debug information for API requests"
+  sensitive = false
+} 

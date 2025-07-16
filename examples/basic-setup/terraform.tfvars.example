@@ -1,0 +1,18 @@
+# =============================================================================
+# AlertOps Terraform Provider - Basic Setup Variables
+# =============================================================================
+# Copy this file to terraform.tfvars and update the values for your environment
+
+# Your AlertOps API key (get from AlertOps console)
+alertops_api_key = "your-alertops-api-key-here"
+
+# Your company domain for email generation
+company_domain = "your-company.com"
+
+# Environment identifier (optional)
+environment = "dev"
+
+# Example values:
+# alertops_api_key = "12345678-abcd-1234-abcd-123456789abc"
+# company_domain = "acme.com"
+# environment = "prod" 
