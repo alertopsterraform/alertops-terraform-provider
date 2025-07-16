@@ -197,7 +197,7 @@ We welcome contributions! Please see:
 ## Support
 
 - 📧 **Email**: support@alertops.com
-- 💬 **Community**: [AlertOps Community Forum](https://community.alertops.com)
+- 💬 **API**: [AlertOps API Docs](https://api.alertops.com)
 - 📚 **Documentation**: [docs.alertops.com](https://docs.alertops.com)
 - 🎯 **Issues**: [GitHub Issues](https://github.com/alertops/terraform-provider-alertops/issues)
 
@@ -211,4 +211,3 @@ See [CHANGELOG.md](CHANGELOG.md) for release notes and version history.
 
 ---
 
-**Made with ❤️ by the AlertOps team** 
